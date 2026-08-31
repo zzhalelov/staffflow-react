@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  staffflow-db:
+    image: postgres:16-alpine
+    container_name: staffflow-db
+    restart: always
+    environment:
+      POSTGRES_DB: staffflow_db
+      POSTGRES_USER: staffflow_user
+      POSTGRES_PASSWORD: staffflow_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - staffflow-net
+
+  staffflow-backend:
+    image: ghcr.io/zzhalelov/staffflow-backend:latest
+    container_name: staffflow-backend
+    restart: always
+    ports:
+      - "127.0.0.1:8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://staffflow-db:5432/staffflow_db
+      - SPRING_DATASOURCE_USERNAME=staffflow_user
+      - SPRING_DATASOURCE_PASSWORD=staffflow_password
+    depends_on:
+      - staffflow-db
+    networks:
+      - staffflow-net
+
+  staffflow-frontend:
+    image: ghcr.io/zzhalelov/staffflow-react:latest
+    container_name: staffflow-react
+    restart: always
+    ports:
+      - "127.0.0.1:5173:80"
+    networks:
+      - staffflow-net
+
+volumes:
+  pgdata:
+
+networks:
+  staffflow-net:
+    driver: bridge
