@@ -3,7 +3,7 @@ import axios from 'axios';
 // На проде используем относительный путь '/api' (Nginx перенаправит на бэкенд),
 // на локалке — http://localhost:8081
 const API_BASE_URL = import.meta.env.PROD
-    ? '/api'
+    ? ''
     : 'http://localhost:8081';
 
 export const apiClient = axios.create({
